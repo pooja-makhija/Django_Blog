@@ -25,7 +25,7 @@ SECRET_KEY = 'a#up@$^nuxx5_e%%+tmuqy!x$q=gy08z!a-qghdo2yd+g7_(+7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL ='users.User'
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'users',
+    'blogapp',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Blog.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',)
+}
 
 TEMPLATES = [
     {
