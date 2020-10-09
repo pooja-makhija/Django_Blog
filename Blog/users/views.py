@@ -1,10 +1,12 @@
 from rest_framework.generics import (GenericAPIView,
+                                    DestroyAPIView,
                                      CreateAPIView,
                                      ListAPIView)
 from rest_framework.response import Response
 from .serializers import (UserSignUpSerializer,
                           UserLoginSerializer)
 from .models import User
+from rest_framework import status
 
 class UserSignUpAPIView(CreateAPIView):
     serializer_class = UserSignUpSerializer
@@ -24,9 +26,9 @@ class UserSignUpAPIView(CreateAPIView):
                 "email": obj.email,
                 "username": obj.username
             }
-            return Response(response_data)
+            return Response(response_data, status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class GetUserListView(ListAPIView):
@@ -38,7 +40,7 @@ class GetUserListView(ListAPIView):
     def get(self, request, *args, **kwargs):
         serializer = super().list(request, *args, **kwargs)
         print("SERIALIZER", serializer.data)
-        return Response(serializer.data)
+        return Response(serializer.data, status.HTTP_200_OK)
 
 class UserLoginAPIView(CreateAPIView):
     serializer_class = UserLoginSerializer
@@ -59,4 +61,11 @@ class UserLoginAPIView(CreateAPIView):
             }
             return Response(response_data)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors,  status.HTTP_400_BAD_REQUEST)
+
+class DeleteUserView(DestroyAPIView):
+
+    def delete(self, request, *args, **kwargs):
+        user_id = self.kwargs["pk"]
+        User.objects.filter(id=user_id).delete()
+        return Response(status.HTTP_204_NO_CONTENT)
