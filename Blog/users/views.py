@@ -1,10 +1,12 @@
 from rest_framework.generics import (GenericAPIView,
                                     DestroyAPIView,
                                      CreateAPIView,
+                                    UpdateAPIView,
                                      ListAPIView)
 from rest_framework.response import Response
 from .serializers import (UserSignUpSerializer,
-                          UserLoginSerializer)
+                          UserLoginSerializer,
+                          UserUpdateSerializer)
 from .models import User
 from rest_framework import status
 
@@ -69,3 +71,26 @@ class DeleteUserView(DestroyAPIView):
         user_id = self.kwargs["pk"]
         User.objects.filter(id=user_id).delete()
         return Response(status.HTTP_204_NO_CONTENT)
+
+class UpdateUserAPIView(UpdateAPIView):
+    serializer_class = UserUpdateSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['pk']
+        return User.objects.filter(id=user_id)
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.first_name = request.data["first_name"]
+        instance.last_name = request.data["last_name"]
+        instance.linkedin_url = request.data["linkedin_url"]
+        instance.description = request.data["description"]
+        instance.contact_number = request.data["contact_number"]
+        instance.email = request.data["email"]
+
+        serializer = self.get_serializer(instance, data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            self.partial_update(serializer)
+
+        return Response(serializer.data, status.HTTP_200_OK)

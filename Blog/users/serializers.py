@@ -33,3 +33,8 @@ class UserLoginSerializer(serializers.Serializer):
             return attrs
         else:
             raise serializers.ValidationError()
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "first_name", "last_name", "email", "description", "linkedin_url", "contact_number"]
